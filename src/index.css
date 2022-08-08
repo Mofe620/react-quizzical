@@ -14,6 +14,7 @@ body {
   font-weight: 400;
   font-size: 20px;
   color: #293264;
+  overflow-x: hidden;
 }
 h3 {
   font-weight: 700;
@@ -41,6 +42,7 @@ button {
 .quiz {
   padding: 3em 10em;
   height: auto;
+  min-height: 100vh;
 }
 .quiz button {
   margin-top: 1em;
@@ -69,6 +71,28 @@ button {
   background-color: #D6DBF5;
   border: none;
 }
+.question li.selected {
+  background-color: #D6DBF5;
+  border: none;
+}
+.quiz.mark li.correct {
+  background-color: #94D7A2;
+}
+.quiz.mark li.incorrect.picked {
+  background-color: #F8BCBC;
+}
+.play_again {
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.play_again p {
+  font-weight: 500;
+  margin-top: 1em;
+}
+.play_again button {
+  margin-left: 1em;
+}
 
 /* MEDIA QUERY */
 @media (max-width:400px) {
@@ -85,5 +109,11 @@ button {
     margin: 0;
     margin-bottom: 0.5em;
     border-radius: 0.5em;
+  }
+  .play_again {
+    flex-direction: column;
+  }
+  .play_again button {
+    margin-left: 0;
   }
 }
