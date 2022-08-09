@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default function Quiz() {
   const [questions, setQuestions] = useState([]);
-  const [gameOver, setGameOver] = useState(false);
 
   const getQuestions = useCallback(async () => {
     const request = await fetch('https://opentdb.com/api.php?amount=5&type=multiple');
@@ -28,8 +27,9 @@ export default function Quiz() {
     //Count number of Correct Picks 
     // eslint-disable-next-line
     success.push(Score.filter(entry => entry.status == true)); 
-    console.log(success);
-    setGameOver(true)
+    //console.log(success)
+    //console.log(success[0].length);
+    document.querySelector('#score').textContent = success[0].length;
   }
 
   const Score = [];
@@ -53,7 +53,7 @@ export default function Quiz() {
       {questions && <button id='submit' onClick={showAnswers}>Check answers</button>}
 
       <div className="play_again">
-        {questions && gameOver && <p>You scored {success.length}/{questions.length} correct answers</p>}
+        {questions && <p>You scored <span id='score'></span>/{questions.length} correct answers</p>}
         <button onClick={() => window.location.reload()}>Play again</button>
       </div>
     </div>
