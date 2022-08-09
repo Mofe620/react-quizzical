@@ -6,7 +6,7 @@ export default function Quiz() {
   const [questions, setQuestions] = useState([]);
 
   const getQuestions = useCallback(async () => {
-    const request = await fetch('https://opentdb.com/api.php?amount=5&type=multiple');
+    const request = await fetch('https://opentdb.com/api.php?amount=10&type=multiple'); //desktop version of otdb api fails to generate link at the moment but you can always use your mobile to customize the questions received https://opentdb.com/api_config.php
     const response = await request.json();
     const questionSet = response.results;
     setQuestions(questionSet);
@@ -45,7 +45,7 @@ export default function Quiz() {
 
   return (
     <div className='quiz'>
-      {questions && <h3>Answer 5 Questions</h3>}
+      {questions != null ? <h3>Answer 10 Questions</h3> : ""}
       <div className="">
         {questions != null ? questions.map(question =>  <Question key={uuidv4()} id={question.question} giveRemark={markQuestion} raw={question} />) : "Loading..."} 
       </div>
