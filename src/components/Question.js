@@ -2,7 +2,7 @@ import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import he from "he";
 
-export default function Question({raw, success, setSuccess}) {
+export default function Question({raw, giveRemark, id}) {
 
   const json = JSON.stringify(raw);
   const format1 = json.replace(/\\n/g, "\\n")  
@@ -18,7 +18,8 @@ export default function Question({raw, success, setSuccess}) {
   const data = JSON.parse(format2);
   const incorrect = data.incorrect_answers;
   const correct = data.correct_answer;
-  const options = [];
+   
+  const options = []//React.useMemo(() =>,[data]); //useMemo requires a proper dependency else it'll likely act twice
   incorrect.forEach(value => options.push({
     content: value,
     status: false,
@@ -27,19 +28,29 @@ export default function Question({raw, success, setSuccess}) {
   options.push({
     content: correct,
     status: true,
-    picked: false,
-    id: uuidv4()
+    picked: false
   });
   //status indicates if an option is the correct answer or not
   //picked indicates if an option has been selected by the user
 
   //SHUFFLE OPTIONS
-  const shuffledOptions = options.sort(function () {
-    return Math.random() - 0.5;
-  });
+  const [shuffledOptions, setShuffledOptions] = React.useState()
+  const shuffle = ()=>{
+    return options.sort(()=>  Math.random() - 0.5);
+    // eslint-disable-next-line
+  };
+
+  // eslint-disable-next-line
+  const shuffled = React.useMemo(() => shuffle, [data])
+
+  React.useEffect(() => {
+    setShuffledOptions(shuffled)
+    // eslint-disable-next-line
+  }, [])
+  
   
   //SELECT OPTION
-  function selectOption(e, value, id){
+  function selectOption(e, value){
     for (let i = 0; i < shuffledOptions.length; i++) {
       if (shuffledOptions[i].content === value){
         shuffledOptions[i].picked = true;
@@ -52,24 +63,10 @@ export default function Question({raw, success, setSuccess}) {
             childTags[v].classList.remove('selected');
           }
         }
-        if(shuffledOptions[i].status === true){
-          if(!success.includes(value)){
-            success.push(value);
-            setSuccess(success);
-            console.log(success);
-          }
+        if(value === correct){
+          giveRemark(id, true);
         } else {
-          //if first attempt is wrong, do nothing
-          //if user changes right answer to wrong answer, remove right answer and update success array
-          const optionsArray = shuffledOptions.map(option => option.content);
-          // eslint-disable-next-line
-          const common = optionsArray.filter(element => success.includes(element));
-          console.log(common);
-          if(common.some(r=> optionsArray.includes(r))){
-            const modify = success.filter(item => !common.includes(item));
-            setSuccess(modify);
-            console.log(success);
-          }
+          giveRemark(id, false);
         }
       } else {
         shuffledOptions[i].picked = false;
@@ -81,9 +78,10 @@ export default function Question({raw, success, setSuccess}) {
     <>
       <div className='question'>
         <p>{data.question}</p>
-        <ul>
-          {shuffledOptions.map(option => <li onClick={(e)=>{selectOption(e, option.content, option.id)}} className={option.status ? "correct" : "incorrect"} key={uuidv4()}>{option.content}{option.selected}</li>)}
-        </ul>
+        {shuffledOptions && <ul>
+          {shuffledOptions.map(option => <li onClick={(e)=>{selectOption(e, option.content)}} className={option.status ? "correct" : "incorrect"} key={uuidv4()}>{option.content}</li>)}
+        </ul>}
+        <input type="hidden" name="" value={correct} />
       </div>
     </>
   )
